@@ -48,8 +48,10 @@ try {
     if (-not $Version) { $Version = [pscustomobject]@{ Version = '0.0.0'; BuildDate = ''; Channel = ''; License = 'GPL-3.0-or-later'; Repository = '' } }
 
     if (-not ('RvmDwm' -as [type])) {
-        Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class RvmDwm { [DllImport("dwmapi.dll")] public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size); }'
+        Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class RvmDwm { [DllImport("dwmapi.dll")] public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size); [DllImport("shell32.dll", CharSet = CharSet.Unicode)] public static extern int SetCurrentProcessExplicitAppUserModelID(string appId); }'
     }
+    # Eigene App-ID: sonst gruppiert Windows das Fenster unter powershell.exe und zeigt dessen Symbol in der Taskleiste
+    try { [void][RvmDwm]::SetCurrentProcessExplicitAppUserModelID('urscaviezel.REALModManager') } catch { }
 
     # Anwendung + Stile + Farben (Farben sind DynamicResources und koennen live umgeschaltet werden)
     $App = [System.Windows.Application]::Current
@@ -126,7 +128,7 @@ try {
     Show-Fatal ("UI failed to load:`n`n{0}" -f ($msgs -join "`n`n-> "))
     exit 1
 }
-foreach ($n in @('mainMenu', 'miImportZip', 'miImportFolder', 'miModVersions', 'miRemoveMod', 'miOpenData', 'miCleanup', 'miExit', 'miLibrary', 'miRescan', 'miFullScan',
+foreach ($n in @('mainMenu', 'miImportZip', 'miImportFolder', 'miModVersions', 'miRemoveMod', 'miOpenData', 'miCleanup', 'miPatreon', 'btnPatreon', 'miExit', 'miLibrary', 'miRescan', 'miFullScan',
         'miAddFolder', 'miManageFolders', 'miRegistry', 'miRestorePoint', 'miRegExport', 'miLog', 'miLanguage', 'miThemeDark', 'miThemeLight', 'miThemeSystem',
         'miOnlineCovers', 'miGuide', 'miBuildInfo', 'miUpdate',
         'imgLogo', 'bdOnlineHint', 'btnEnableOnline', 'btnRemovePic',
@@ -662,6 +664,7 @@ function Apply-LibraryFilter {
         $UI.txtEmpty.Text = $(if ($State.Mod) { T 'lib.empty' } else { T 'lib.emptyNoMod' })
         $UI.txtEmpty.Visibility = 'Visible'
     } else { $UI.txtEmpty.Visibility = 'Collapsed' }
+    $UI.btnPatreon.Visibility = $(if (-not $State.Mod) { 'Visible' } else { 'Collapsed' })
 }
 
 function Start-Scan {
@@ -1073,6 +1076,9 @@ $UI.miRemoveMod.Add_Click({
         $m = Get-SelectedMod
         if ($m -and (Confirm-Yes (T 'msg.removeMod' $m.Id))) { Remove-RvmMod -Id $m.Id; Refresh-Mods; Start-Scan }
     })
+$PatreonUrl = 'https://www.patreon.com/c/realvr'
+$UI.miPatreon.Add_Click({ Start-Process $PatreonUrl })
+$UI.btnPatreon.Add_Click({ Start-Process $PatreonUrl })
 $UI.miOpenData.Add_Click({ Open-Explorer (Get-RvmDir Root) })
 $UI.miCleanup.Add_Click({
         $items = @(Get-RvmCleanupItems | Where-Object { $_.Size -gt 0 })

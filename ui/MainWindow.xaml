@@ -16,6 +16,7 @@
       <MenuItem Header="@menu.file">
         <MenuItem x:Name="miImportZip" Header="@menu.importZip"/>
         <MenuItem x:Name="miImportFolder" Header="@menu.importFolder"/>
+        <MenuItem x:Name="miPatreon" Header="@menu.patreon"/>
         <Separator/>
         <MenuItem x:Name="miModVersions" Header="@menu.modVersion"/>
         <MenuItem x:Name="miRemoveMod" Header="@menu.removeMod"/>
@@ -133,6 +134,7 @@
               </ItemsControl.ItemTemplate>
             </ItemsControl>
             <TextBlock x:Name="txtEmpty" Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,20,0,0" Visibility="Collapsed"/>
+            <Button x:Name="btnPatreon" Style="{StaticResource Primary}" HorizontalAlignment="Left" Margin="0,14,0,0" Visibility="Collapsed" Content="@lib.getMod"/>
           </StackPanel>
         </ScrollViewer>
       </Grid>

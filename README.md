@@ -7,7 +7,7 @@
 A Windows GUI to install, update and **cleanly uninstall** Luke Ross' **R.E.A.L. VR** mod.
 Every installation is recorded before and after (game folder, settings folders, registry, folder permissions, NVIDIA profile), so uninstalling restores the original state – and a final check reports any leftovers.
 
-> R.E.A.L. VR is made by Luke Ross and is **not** included. You import your own mod ZIP (available to his Patreon supporters).
+> R.E.A.L. VR is made by Luke Ross and is **not** included. Get it from his Patreon: **[patreon.com/c/realvr](https://www.patreon.com/c/realvr)** – then import the downloaded ZIP into the manager.
 
 ## Features
 
@@ -41,7 +41,7 @@ Translations: copy `lang\en.json`, translate, save as `lang\<code>.json` – pul
 
 ## License & credits
 
-GPL-3.0-or-later. Ideas: [LukeRossCleaner](https://github.com/Yelodress/LukeRossCleaner) (Yelodress, MIT), DLSS 5 Autopilot (MIT). Not affiliated with Luke Ross.
+GPL-3.0-or-later. R.E.A.L. VR: Luke Ross, [Patreon](https://www.patreon.com/c/realvr). Ideas: [LukeRossCleaner](https://github.com/Yelodress/LukeRossCleaner) (Yelodress, MIT), DLSS 5 Autopilot (MIT). Not affiliated with Luke Ross.
 
 ---
 
@@ -50,18 +50,20 @@ GPL-3.0-or-later. Ideas: [LukeRossCleaner](https://github.com/Yelodress/LukeRoss
 
 Installer/Uninstaller mit GUI für Luke Ross' **R.E.A.L. VR** Mod.
 Jede Installation wird vollständig protokolliert (vorher/nachher), damit die Deinstallation den Ausgangszustand exakt wiederherstellt.
-R.E.A.L. VR ist nicht enthalten – du importierst deine eigene ZIP.
 
-Installer/Uninstaller mit GUI für Luke Ross' **R.E.A.L. VR** Mod.
-Jede Installation wird vollständig protokolliert (vorher/nachher), damit die Deinstallation den Ausgangszustand exakt wiederherstellt.
+> R.E.A.L. VR stammt von Luke Ross und ist **nicht** enthalten. Den Mod gibt es auf seinem Patreon: **[patreon.com/c/realvr](https://www.patreon.com/c/realvr)** – die heruntergeladene ZIP dann im Manager importieren.
 
 ### Starten
 
-* Release: `R.E.A.L. Mod Manager.exe` doppelklicken → Windows fragt nach Administratorrechten. Bei Problemen mit `--debug` starten (zeigt das PowerShell-Fenster).
-* Entwicklungsordner: `Start-RealVRManager.cmd` bzw. `Start-RealVRManager-Debug.cmd`.
-* Voraussetzung: Windows 10/11 mit Windows PowerShell 5.1 (vorinstalliert). Keine Installation nötig.
+Download unter [Releases](https://github.com/urscaviezel/R.E.A.L.-Mod-Manager/releases):
 
-Alle Daten (Mod-Bibliothek, Protokolle, Sicherungen, Cover, Logs, Spiele-Cache) liegen im Ordner `Data` neben dem Programm.
+* **`…-Setup.exe`** – Installer (Programme, Startmenü). Daten unter `%ProgramData%\R.E.A.L. Mod Manager`.
+* **`…-portable.zip`** – irgendwo entpacken, `R.E.A.L. Mod Manager.exe` starten. Daten im Ordner `Data` daneben.
+
+Windows fragt beim Start nach Administratorrechten. Bei Problemen mit `--debug` starten (zeigt das PowerShell-Fenster). Aus dem Quellcode: `Start-RealVRManager.cmd` bzw. `Start-RealVRManager-Debug.cmd`.
+Voraussetzung: Windows 10/11 mit Windows PowerShell 5.1 (vorinstalliert), eine VR-Runtime wie SteamVR oder Virtual Desktop.
+
+Daten = Mod-Bibliothek, Protokolle, Sicherungen, Cover, Logs, Spiele-Cache.
 
 ### Oberfläche
 
@@ -125,4 +127,4 @@ Für GitHub-Releases: Tag `v<Version>`, beide Dateien als Assets anhängen – d
 
 ### Lizenz / Credits
 
-GPL-3.0-or-later. R.E.A.L. VR (Luke Ross) ist nicht enthalten – du importierst deine eigene ZIP. Ideen: LukeRossCleaner (Yelodress, MIT), DLSS 5 Autopilot (MIT).
+GPL-3.0-or-later. R.E.A.L. VR (Luke Ross, [Patreon](https://www.patreon.com/c/realvr)) ist nicht enthalten – du importierst deine eigene ZIP. Kein offizielles Projekt von Luke Ross. Ideen: LukeRossCleaner (Yelodress, MIT), DLSS 5 Autopilot (MIT).

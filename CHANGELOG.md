@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1 – 2026-10-22
+
+- Link to Luke Ross' Patreon (where R.E.A.L. VR is available): menu *R.E.A.L. Mod*, empty library, guide · Link zum Patreon von Luke Ross (dort gibt es R.E.A.L. VR): Menü *R.E.A.L. Mod*, leere Bibliothek, Anleitung
+- README: Patreon link, German section cleaned up · README: Patreon-Link, deutscher Teil bereinigt
+- Taskbar shows the app icon instead of the PowerShell icon · Taskleiste zeigt das App-Symbol statt des PowerShell-Symbols
+
 ## 1.0.0 – 2026-10-22
 
 First public release · Erste öffentliche Version

@@ -60,7 +60,7 @@ R.E.A.L. Mod Manager $version
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_015ahBcMkeqzWnmzQzCEinP5
-"@ | Set-Content -LiteralPath $msg -Encoding UTF8
+"@ | ForEach-Object { [IO.File]::WriteAllText($msg, $_, (New-Object Text.UTF8Encoding($false))) }   # ohne BOM, sonst steht ein unsichtbares Zeichen im Commit-Titel
         if ((RunGit commit -F $msg) -ne 0) { throw 'git commit fehlgeschlagen.' }
         Remove-Item -LiteralPath $msg -Force
     } else { Write-Host '  Keine Aenderungen seit dem letzten Hochladen.' }
