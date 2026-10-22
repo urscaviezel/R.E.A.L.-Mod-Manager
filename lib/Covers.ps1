@@ -201,11 +201,20 @@ function Find-SteamAppIdByName {
 }
 
 function Get-SteamArtUrls {
+    # Feste CDN-Adressen (ohne Anfrage an Steam) - funktionieren fuer die allermeisten Spiele.
     param([string]$AppId)
     $f = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/$AppId/"
-    $c = "https://cdn.cloudflare.steamstatic.com/steam/apps/$AppId/"
+    $k = "https://cdn.akamai.steamstatic.com/steam/apps/$AppId/"
+    return @{
+        cover = @("${f}library_600x900_2x.jpg", "${f}library_600x900.jpg", "${k}library_600x900.jpg")
+        hero  = @("${f}library_hero.jpg", "${k}library_hero.jpg")
+    }
+}
+
+function Get-SteamArtUrlsApi {
+    # Rueckfall: neuere Spiele liegen in einem Hash-Ordner -> Asset-Liste des Stores abfragen.
+    param([string]$AppId)
     $out = @{ cover = @(); hero = @() }
-    # Neuere Apps legen die Bilder in einem Hash-Ordner ab -> Asset-Liste des Stores
     $q = '{"ids":[{"appid":' + $AppId + '}],"context":{"language":"english","country_code":"US"},"data_request":{"include_assets":true}}'
     $raw = Invoke-RvmHttpGet ("https://api.steampowered.com/IStoreBrowseService/GetItems/v1/?input_json=" + [Uri]::EscapeDataString($q))
     if ($raw) {
@@ -219,8 +228,6 @@ function Get-SteamArtUrls {
             }
         } catch { }
     }
-    $out.cover += @("${f}library_600x900_2x.jpg", "${f}library_600x900.jpg", "${c}library_600x900.jpg")
-    $out.hero += @("${f}library_hero.jpg", "${c}library_hero.jpg")
     return $out
 }
 
@@ -362,8 +369,21 @@ function Update-GameArtOnline {
         }
         $got = $false
         if ($urls) {
-            if (-not $art.Cover -and $urls.cover.Count) { if (Save-DownloadedImage $dir 'cover' $urls.cover) { $got = $true; $new++ } }
-            if (-not $art.Hero -and $urls.hero.Count) { if (Save-DownloadedImage $dir 'hero' $urls.hero) { $got = $true } }
+            $api = $null
+            if (-not $art.Cover -and $urls.cover.Count) {
+                if (Save-DownloadedImage $dir 'cover' $urls.cover) { $got = $true; $new++ }
+                elseif ($appid) {
+                    $api = Get-SteamArtUrlsApi $appid
+                    if ($api.cover.Count -and (Save-DownloadedImage $dir 'cover' $api.cover)) { $got = $true; $new++ }
+                }
+            }
+            if (-not $art.Hero -and $urls.hero.Count) {
+                if (Save-DownloadedImage $dir 'hero' $urls.hero) { $got = $true }
+                elseif ($appid) {
+                    if (-not $api) { $api = Get-SteamArtUrlsApi $appid }
+                    if ($api.hero.Count -and (Save-DownloadedImage $dir 'hero' $api.hero)) { $got = $true }
+                }
+            }
         }
         $art2 = Get-GameArt $g
         if (-not $art2.Cover) {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0 – 2026-10-23
+
+- Covers and store info load about twice as fast: 8 games in parallel, fixed Steam CDN addresses first (store asset lookup only as fallback) · Cover und Shop-Infos laden etwa doppelt so schnell: 8 Spiele gleichzeitig, zuerst die festen Steam-Bildadressen (Abfrage der Bildadresse nur noch als Rückfall)
+- Log shows how long loading covers took · Protokoll zeigt, wie lange das Laden der Cover gedauert hat
+
 ## 1.0.1 – 2026-10-22
 
 - Link to Luke Ross' Patreon (where R.E.A.L. VR is available): menu *R.E.A.L. Mod*, empty library, guide · Link zum Patreon von Luke Ross (dort gibt es R.E.A.L. VR): Menü *R.E.A.L. Mod*, leere Bibliothek, Anleitung

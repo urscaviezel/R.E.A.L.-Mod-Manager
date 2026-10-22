@@ -157,6 +157,8 @@ $State = @{
     RegDiffs     = @()
     RegVsCurrent = $false
     CoverPending = $false
+    CoverStart   = $null
+    CoverTotal   = 0
     LogFile      = [IO.Path]::Combine((Get-RvmDir Logs), ('{0}.log' -f (Get-Date -Format 'yyyy-MM-dd')))
 }
 $ActionControls = @('btnScan', 'btnInstall', 'btnUpdate', 'btnUninstall', 'btnRegSnap', 'btnRegExport', 'btnRestorePoint', 'btnRegCompare', 'btnRegDelete', 'btnRegRestore',
@@ -753,7 +755,7 @@ function Start-Scan {
 }
 
 function Start-CoverDownload {
-    # Laedt fehlende Cover/Infos in kleinen Paketen, damit die Bilder nach und nach erscheinen.
+    # Laedt fehlende Cover/Infos parallel (8 Spiele gleichzeitig) in Paketen, damit die Bilder nach und nach erscheinen.
     # Ist der Hintergrund gerade belegt, wird der Auftrag vorgemerkt und danach ausgefuehrt.
     param($Queue = $null)
     if ((Get-RvmSettings).OnlineCovers -ne $true) { return }
@@ -761,21 +763,41 @@ function Start-CoverDownload {
     if ($null -eq $Queue) {
         $State.CoverPending = $false
         $Queue = @($State.Rows | Where-Object { -not $_.CoverPath -or -not $_.HeroPath -or (-not $_.OnDisk -and -not ($_.Info -and ($_.Info.Lang -eq $script:RvmLang.Code -or $_.Info.Miss))) } | ForEach-Object {
-                [pscustomobject]@{ Key = $_.Key; Name = $_.Name; Folder = $_.Folder; RootFolder = $_.RootFolder; AppId = $_.AppId; StoreName = $_.StoreName; EpicItem = $_.EpicItem; EpicNs = $_.EpicNs; NeedInfo = (-not $_.OnDisk) }
+                [pscustomobject]@{ Key = $_.Key; Name = $_.Name; Label = $_.Label; Folder = $_.Folder; RootFolder = $_.RootFolder; AppId = $_.AppId; StoreName = $_.StoreName; EpicItem = $_.EpicItem; EpicNs = $_.EpicNs; NeedInfo = (-not $_.OnDisk) }
             })
-        # sichtbare Spiele auf dem PC zuerst
         $Queue = @($Queue | Sort-Object @{ Expression = { [bool]$_.NeedInfo } }, Name)
+        if ($Queue.Count) { $State.CoverStart = [DateTime]::Now; $State.CoverTotal = $Queue.Count }
     }
     $Queue = @($Queue)
     if (-not $Queue.Count) { return }
-    $batch = @($Queue | Select-Object -First 4)
-    $rest = @($Queue | Select-Object -Skip 4)
+    $batch = @($Queue | Select-Object -First 8)
+    $rest = @($Queue | Select-Object -Skip 8)
     Start-RvmTask -Background -Title (T 'task.covers') -Params @{ Games = $batch } -Context @{ Rest = $rest } -Script {
         param($Games)
-        $n = Update-GameArtOnline -Games $Games
+        # jedes Spiel in einem eigenen Runspace -> Steam-Anfragen laufen gleichzeitig
+        $lib = [IO.Path]::Combine($script:RVM.AppRoot, 'lib', 'LoadAll.ps1')
+        $pool = [runspacefactory]::CreateRunspacePool(1, [Math]::Max(1, @($Games).Count))
+        $pool.Open()
+        $jobs = @()
+        foreach ($g in $Games) {
+            $ps = [powershell]::Create()
+            $ps.RunspacePool = $pool
+            [void]$ps.AddScript({
+                    param($Lib, $AppRoot, $DataRoot, $Shared, $Game)
+                    . $Lib
+                    Initialize-RVM -AppRoot $AppRoot -DataRoot $DataRoot -Shared $Shared
+                    try { [void](Update-GameArtOnline -Games @($Game)) } catch { Write-RvmLog ('{0}: {1}' -f $Game.Name, $_.Exception.Message) WARN }
+                    $a = Get-GameArt $Game
+                    [pscustomobject]@{ Key = $Game.Key; Cover = $a.Cover; Hero = $a.Hero; Info = (Get-GameInfo $Game) }
+                }.ToString()).AddArgument($lib).AddArgument($script:RVM.AppRoot).AddArgument($script:RVM.DataRoot).AddArgument($script:RVM.Shared).AddArgument($g)
+            $jobs += @{ PS = $ps; H = $ps.BeginInvoke() }
+        }
         $out = @()
-        foreach ($g in $Games) { $a = Get-GameArt $g; $out += [pscustomobject]@{ Key = $g.Key; Cover = $a.Cover; Hero = $a.Hero; Info = (Get-GameInfo $g) } }
-        return @{ New = $n; Art = $out }
+        foreach ($j in $jobs) {
+            try { $r = $j.PS.EndInvoke($j.H); if ($r -and $r.Count) { $out += $r[$r.Count - 1] } } catch { } finally { $j.PS.Dispose() }
+        }
+        $pool.Close(); $pool.Dispose()
+        return @{ Art = $out }
     } -OnDone {
         param($r, $ctx)
         if ($r) {
@@ -793,6 +815,12 @@ function Start-CoverDownload {
             if ($State.Page -eq 'detail' -and $State.Detail) { Show-Detail $State.Detail }
         }
         if (@($ctx.Rest).Count) { Start-CoverDownload -Queue $ctx.Rest }
+        elseif ($State.CoverStart) {
+            $sec = ([DateTime]::Now - $State.CoverStart).TotalSeconds
+            Add-LogLine ('{0} [OK] {1}' -f (Get-Date -Format 'HH:mm:ss'), (T 'log.cover.timing' $State.CoverTotal ('{0:N1}' -f $sec)))
+            $UI.txtStatus.Text = T 'log.cover.timing' $State.CoverTotal ('{0:N1}' -f $sec)
+            $State.CoverStart = $null
+        }
     }
 }
 

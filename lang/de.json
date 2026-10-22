@@ -2,7 +2,7 @@
   "_meta": {
     "code": "de",
     "name": "Deutsch",
-    "version": "1.0.1"
+    "version": "1.1.0"
   },
   "btn.apply": "Übernehmen",
   "btn.cancel": "Abbrechen",
@@ -149,6 +149,7 @@
   "log.clear": "Anzeige leeren",
   "log.cover.lookup": "Suche Cover für {0} …",
   "log.cover.offline": "Keine Internetverbindung – Cover werden später geladen.",
+  "log.cover.timing": "Cover und Infos für {0} Spiele geladen in {1} s.",
   "log.inst.backupAcl": "Sichere Ordnerrechte …",
   "log.inst.backupFiles": "Sichere Ausgangszustand (Dateien) …",
   "log.inst.backupReg": "Sichere Registry (HKCU\\Software, Khronos) …",

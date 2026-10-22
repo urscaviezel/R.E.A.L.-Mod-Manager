@@ -2,7 +2,7 @@
   "_meta": {
     "code": "fr",
     "name": "Français",
-    "version": "1.0.1"
+    "version": "1.1.0"
   },
   "btn.apply": "Appliquer",
   "btn.cancel": "Annuler",
@@ -149,6 +149,7 @@
   "log.clear": "Effacer",
   "log.cover.lookup": "Recherche de la jaquette de {0} …",
   "log.cover.offline": "Pas de connexion Internet – les jaquettes seront chargées plus tard.",
+  "log.cover.timing": "Jaquettes et infos de {0} jeux chargées en {1} s.",
   "log.inst.backupAcl": "Sauvegarde des droits d'accès …",
   "log.inst.backupFiles": "Sauvegarde de l'état actuel (fichiers) …",
   "log.inst.backupReg": "Sauvegarde du registre (HKCU\\Software, Khronos) …",
