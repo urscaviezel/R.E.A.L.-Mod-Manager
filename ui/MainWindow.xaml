@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Texte mit "@schluessel" werden beim Start aus lang\<sprache>.json gesetzt -->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="R.E.A.L. Mod Manager" Width="1360" Height="880" MinWidth="980" MinHeight="620"
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource Bg}" Foreground="{DynamicResource Text}" FontFamily="Segoe UI" FontSize="13">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- ================= Menue ================= -->
+    <Menu x:Name="mainMenu" Grid.Row="0" Padding="40,2,6,2">
+      <MenuItem Header="@menu.file">
+        <MenuItem x:Name="miImportZip" Header="@menu.importZip"/>
+        <MenuItem x:Name="miImportFolder" Header="@menu.importFolder"/>
+        <Separator/>
+        <MenuItem x:Name="miModVersions" Header="@menu.modVersion"/>
+        <MenuItem x:Name="miRemoveMod" Header="@menu.removeMod"/>
+        <Separator/>
+        <MenuItem x:Name="miOpenData" Header="@menu.openData"/>
+        <MenuItem x:Name="miCleanup" Header="@menu.cleanup"/>
+        <Separator/>
+        <MenuItem x:Name="miExit" Header="@menu.exit"/>
+      </MenuItem>
+      <MenuItem Header="@menu.games">
+        <MenuItem x:Name="miLibrary" Header="@menu.library"/>
+        <Separator/>
+        <MenuItem x:Name="miRescan" Header="@menu.rescan" InputGestureText="F5"/>
+        <MenuItem x:Name="miFullScan" Header="@menu.fullScan"/>
+        <Separator/>
+        <MenuItem x:Name="miAddFolder" Header="@menu.addFolder"/>
+        <MenuItem x:Name="miManageFolders" Header="@menu.manageFolders"/>
+      </MenuItem>
+      <MenuItem Header="@menu.backup">
+        <MenuItem x:Name="miRegistry" Header="@menu.registry"/>
+        <MenuItem x:Name="miRestorePoint" Header="@menu.restorePoint"/>
+        <MenuItem x:Name="miRegExport" Header="@menu.regExport"/>
+      </MenuItem>
+      <MenuItem Header="@menu.view">
+        <MenuItem x:Name="miLog" Header="@menu.log"/>
+      </MenuItem>
+      <MenuItem Header="@menu.settings">
+        <MenuItem x:Name="miLanguage" Header="@menu.language"/>
+        <MenuItem Header="@menu.theme">
+          <MenuItem x:Name="miThemeDark" Header="@menu.themeDark" IsCheckable="True"/>
+          <MenuItem x:Name="miThemeLight" Header="@menu.themeLight" IsCheckable="True"/>
+          <MenuItem x:Name="miThemeSystem" Header="@menu.themeSystem" IsCheckable="True"/>
+        </MenuItem>
+        <Separator/>
+        <MenuItem x:Name="miOnlineCovers" Header="@menu.onlineCovers" IsCheckable="True"/>
+      </MenuItem>
+      <MenuItem Header="@menu.info">
+        <MenuItem x:Name="miGuide" Header="@menu.guide"/>
+        <MenuItem x:Name="miUpdate" Header="@menu.checkUpdate"/>
+        <MenuItem x:Name="miBuildInfo" Header="@menu.buildInfo"/>
+      </MenuItem>
+    </Menu>
+
+    <Image x:Name="imgLogo" Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" ToolTip="R.E.A.L. Mod Manager"/>
+
+    <!-- ================= Seiten ================= -->
+    <Grid Grid.Row="1" Margin="36,20,36,0">
+
+      <!-- Bibliothek -->
+      <Grid x:Name="pageLibrary">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" LastChildFill="False">
+          <StackPanel DockPanel.Dock="Left">
+            <TextBlock Text="@lib.title" FontSize="28" FontWeight="SemiBold"/>
+            <TextBlock x:Name="txtLibSub" Foreground="{DynamicResource Muted}" Margin="0,2,0,0"/>
+            <TextBlock x:Name="txtModVersion" Visibility="Collapsed"/>
+          </StackPanel>
+          <Button x:Name="btnScan" DockPanel.Dock="Right" Style="{StaticResource Primary}" Margin="0" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,8,0"/>
+              <TextBlock Text="@lib.scan"/>
+            </StackPanel>
+          </Button>
+          <Grid DockPanel.Dock="Right" Width="300" Margin="0,0,12,0" VerticalAlignment="Center">
+            <TextBox x:Name="txtSearch" Padding="30,7,6,7"/>
+            <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource Muted}" Margin="10,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+            <TextBlock x:Name="txtSearchHint" Text="@lib.search" Foreground="{DynamicResource Dim}" Margin="32,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+          </Grid>
+        </DockPanel>
+        <DockPanel Grid.Row="1" Margin="0,18,0,14" LastChildFill="False">
+          <RadioButton x:Name="chipAll" Style="{StaticResource Chip}" GroupName="filter" IsChecked="True" Content="@lib.filterAll"/>
+          <Rectangle Width="1" Height="16" Fill="{DynamicResource Line}" Margin="10,0,32,0" VerticalAlignment="Center"/>
+          <TextBlock Text="@lib.filterMod" Foreground="{DynamicResource Dim}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+          <RadioButton x:Name="chipInstalled" Style="{StaticResource Chip}" GroupName="filter" Content="@lib.filterInstalled"/>
+          <RadioButton x:Name="chipUpdate" Style="{StaticResource Chip}" GroupName="filter" Content="@lib.filterUpdate"/>
+          <RadioButton x:Name="chipNot" Style="{StaticResource Chip}" GroupName="filter" Content="@lib.filterNot"/>
+        </DockPanel>
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel>
+            <Border x:Name="bdOnlineHint" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Accent}" BorderThickness="3,0,0,0" Padding="14,10" Margin="0,0,22,18" Visibility="Collapsed">
+              <DockPanel>
+                <Button x:Name="btnEnableOnline" DockPanel.Dock="Right" Style="{StaticResource Primary}" Margin="12,0,0,0" Content="@lib.enableOnline"/>
+                <TextBlock Text="@lib.onlineHint" TextWrapping="Wrap" VerticalAlignment="Center"/>
+              </DockPanel>
+            </Border>
+            <ItemsControl x:Name="icGames">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Button Style="{StaticResource Tile}" Tag="{Binding}" Width="176" Margin="0,0,22,24" ToolTip="{Binding TileTip}">
+                    <StackPanel>
+                      <Grid Width="176" Height="264">
+                        <Border Background="{DynamicResource Surface2}" CornerRadius="3"/>
+                        <TextBlock Text="{Binding Initials}" FontSize="40" FontWeight="SemiBold" Foreground="{DynamicResource Dim}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Image Source="{Binding CoverImage}" Stretch="UniformToFill"/>
+                        <Border Background="#000000" Opacity="{Binding DimOpacity}" CornerRadius="3"/>
+                        <Border Background="#99000000" CornerRadius="9" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8" Padding="3">
+                          <Ellipse Width="11" Height="11" Fill="{Binding CompatColor}" ToolTip="{Binding CompatLevelText}"/>
+                        </Border>
+                      </Grid>
+                      <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Margin="0,9,0,0" TextTrimming="CharacterEllipsis" Opacity="{Binding TextOpacity}"/>
+                      <StackPanel Orientation="Horizontal" Margin="0,3,0,0" Opacity="{Binding TextOpacity}">
+                        <Ellipse Width="7" Height="7" Fill="{Binding StateColor}" Visibility="{Binding StateDot}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding StateShort}" Foreground="{Binding StateColor}" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                      </StackPanel>
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock x:Name="txtEmpty" Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,20,0,0" Visibility="Collapsed"/>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+
+      <!-- Spiel-Detail -->
+      <ScrollViewer x:Name="pageDetail" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+          <Grid Height="340">
+            <Border Background="{DynamicResource Surface2}" CornerRadius="3"/>
+            <Image x:Name="imgHero" Stretch="UniformToFill" VerticalAlignment="Center"/>
+            <Rectangle>
+              <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                  <GradientStop Color="#00000000" Offset="0.45"/>
+                  <GradientStop Color="#CC000000" Offset="1"/>
+                </LinearGradientBrush>
+              </Rectangle.Fill>
+            </Rectangle>
+            <Button x:Name="btnBack" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE72B;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="@detail.back"/>
+              </StackPanel>
+            </Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="16">
+              <Button x:Name="btnRemovePic" Margin="0,0,8,0" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                  <TextBlock Text="@detail.removePic"/>
+                </StackPanel>
+              </Button>
+              <Button x:Name="btnChangePic" Margin="0">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="&#xE722;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                  <TextBlock Text="@detail.changePic"/>
+                </StackPanel>
+              </Button>
+            </StackPanel>
+            <TextBlock x:Name="txtDetailName" FontSize="38" FontWeight="Bold" Foreground="White" VerticalAlignment="Bottom" Margin="24,0,24,20" TextWrapping="Wrap"/>
+          </Grid>
+          <WrapPanel x:Name="pnlChips" Margin="0,16,0,0"/>
+          <TextBlock x:Name="txtDetailState" Margin="0,12,0,0" FontSize="14"/>
+          <Border x:Name="bdCompat" Margin="0,12,0,0" Padding="14,10" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Line}" BorderThickness="3,1,1,1">
+            <TextBlock x:Name="txtCompat" TextWrapping="Wrap" LineHeight="20"/>
+          </Border>
+          <WrapPanel Margin="0,18,0,0">
+            <Button x:Name="btnInstall" Style="{StaticResource Primary}" Padding="22,9">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="@detail.install"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="btnUpdate" Style="{StaticResource Primary}" Padding="22,9">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE777;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock x:Name="txtUpdateBtn" Text="@detail.update"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="btnUninstall" Style="{StaticResource Danger}" Padding="22,9">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="@detail.uninstall"/>
+              </StackPanel>
+            </Button>
+          </WrapPanel>
+          <WrapPanel Margin="0,14,0,0">
+            <Button x:Name="btnOpenFolder" Style="{StaticResource Link}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBlock Text="@detail.openFolder"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="btnShop" Style="{StaticResource Link}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE719;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBlock x:Name="txtShopBtn" Text="@detail.shop"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="btnOpenJournal" Style="{StaticResource Link}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBlock Text="@detail.openJournal"/>
+              </StackPanel>
+            </Button>
+          </WrapPanel>
+          <TextBlock x:Name="txtAbout" Margin="0,18,0,0" TextWrapping="Wrap" LineHeight="21" Visibility="Collapsed"/>
+          <TextBlock x:Name="txtDetailInfo" Margin="0,18,0,30" Foreground="{DynamicResource Muted}" FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"/>
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- Registry-Sicherung -->
+      <Grid x:Name="pageRegistry" Visibility="Collapsed">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+          <TextBlock Text="@reg.title" FontSize="28" FontWeight="SemiBold"/>
+          <TextBlock Text="@reg.subtitle" Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+        </StackPanel>
+        <WrapPanel Grid.Row="1" Margin="0,16,0,0">
+          <TextBlock Text="@reg.name" VerticalAlignment="Center" Margin="0,0,8,0"/>
+          <TextBox x:Name="txtRegName" Width="240" Margin="0,0,10,0"/>
+          <Button x:Name="btnRegSnap" Style="{StaticResource Primary}" Content="@reg.create"/>
+          <Button x:Name="btnRegExport" Content="@reg.export"/>
+          <Button x:Name="btnRestorePoint" Content="@reg.restorePoint"/>
+        </WrapPanel>
+        <Border Grid.Row="2" Margin="0,12,0,0" Padding="12,8" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Warn}" BorderThickness="3,0,0,0">
+          <TextBlock Text="@reg.rpWarning" TextWrapping="Wrap" Foreground="{DynamicResource Muted}"/>
+        </Border>
+        <DockPanel Grid.Row="3" Margin="0,14,0,0">
+          <StackPanel DockPanel.Dock="Right" Margin="10,0,0,0">
+            <Button x:Name="btnRegCompare" Style="{StaticResource Primary}" Content="@reg.compare" Margin="0,0,0,6"/>
+            <Button x:Name="btnRegDelete" Content="@reg.delete" Margin="0"/>
+          </StackPanel>
+          <StackPanel>
+            <TextBlock Text="@reg.listHint" Foreground="{DynamicResource Muted}" Margin="0,0,0,6"/>
+            <ListBox x:Name="lstSnapshots" Height="120" SelectionMode="Extended" DisplayMemberPath="Display"/>
+          </StackPanel>
+        </DockPanel>
+        <DataGrid x:Name="gridReg" Grid.Row="4" Margin="0,12,0,0" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Extended" CanUserAddRows="False">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="@reg.colChange" Binding="{Binding ChangeDisplay}" Width="95"/>
+            <DataGridTextColumn Header="@reg.colKey" Binding="{Binding KeyPath}" Width="2*"/>
+            <DataGridTextColumn Header="@reg.colValue" Binding="{Binding ValueDisplay}" Width="170"/>
+            <DataGridTextColumn Header="@reg.colBefore" Binding="{Binding BeforeDisplay}" Width="*"/>
+            <DataGridTextColumn Header="@reg.colAfter" Binding="{Binding AfterDisplay}" Width="*"/>
+          </DataGrid.Columns>
+        </DataGrid>
+        <DockPanel Grid.Row="5" Margin="0,10,0,0" LastChildFill="False">
+          <Button x:Name="btnRegRestore" Style="{StaticResource Danger}" Content="@reg.restore"/>
+          <Button x:Name="btnRegSelectAll" Content="@reg.selectAll"/>
+          <TextBlock x:Name="txtRegInfo" DockPanel.Dock="Right" Foreground="{DynamicResource Muted}" VerticalAlignment="Center"/>
+        </DockPanel>
+      </Grid>
+
+      <!-- Protokoll -->
+      <DockPanel x:Name="pageLog" Visibility="Collapsed">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12" LastChildFill="False">
+          <TextBlock Text="@log.title" FontSize="28" FontWeight="SemiBold"/>
+          <Button x:Name="btnClearLog" DockPanel.Dock="Right" Content="@log.clear" Margin="0" VerticalAlignment="Center"/>
+          <Button x:Name="btnOpenLogs" DockPanel.Dock="Right" Content="@log.openFolder" VerticalAlignment="Center"/>
+        </DockPanel>
+        <TextBox x:Name="txtLog" IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" TextWrapping="NoWrap"/>
+      </DockPanel>
+    </Grid>
+
+    <!-- ================= Statuszeile ================= -->
+    <Border Grid.Row="2" Margin="36,10,36,10" BorderBrush="{DynamicResource Line}" BorderThickness="0,1,0,0" Padding="0,8,0,0">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="txtStatus" Grid.Column="0" Foreground="{DynamicResource Muted}" TextTrimming="CharacterEllipsis" Margin="0,0,20,0" VerticalAlignment="Center"/>
+        <TextBlock x:Name="txtSys" Grid.Column="1" Foreground="{DynamicResource Dim}" ToolTipService.ShowDuration="60000" TextTrimming="CharacterEllipsis" MaxWidth="640" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+          <ProgressBar x:Name="prgBusy" Width="160" Height="4" Visibility="Hidden" Margin="20,0,0,0"/>
+          <Button x:Name="btnLogToggle" Style="{StaticResource Link}" Margin="16,0,0,0">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="&#xE70E;" FontFamily="Segoe MDL2 Assets" FontSize="10" VerticalAlignment="Center" Margin="0,0,6,0"/>
+              <TextBlock Text="@status.log"/>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>
